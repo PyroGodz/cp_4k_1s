@@ -1,14 +1,14 @@
 version: "3.9" 
  
 services: 
-  db: 
+  postgres: 
     image: postgres:latest 
     restart: always 
     volumes: 
       - postgres_data:/var/lib/postgresql/data 
     env_file: 
-      - ./server/.env 
-  backend: 
+      - ./server/.env
+  backend:
     build: ./server 
     # command: node index.js
     command: npm run dev  
@@ -16,11 +16,11 @@ services:
     volumes: 
       - ./server:/app/backend 
     ports: 
-      - "5000:5000" 
+      - "7000:7000" 
     env_file: 
       - server/.env 
     depends_on: 
-      - db 
+      - postgres
   client: 
     build: ./client 
     command: npm start 

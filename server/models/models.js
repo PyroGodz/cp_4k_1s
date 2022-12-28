@@ -2,20 +2,21 @@ const sequelize = require('../db')
 const {DataTypes} = require('sequelize');
 
 const Basket = sequelize.define( 'basket', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
-})
-
-const BasketDevice = sequelize.define( 'basket_device', {
-    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    isOrdered: {type: DataTypes.BOOLEAN}
 })
 
 const Publication = sequelize.define( 'publication', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     price: {type: DataTypes.DECIMAL},
-    discount: {type: DataTypes.DECIMAL},
     img: {type: DataTypes.STRING},
     description: {type: DataTypes.STRING},
     name: {type: DataTypes.STRING}
+})
+
+const Order = sequelize.define( 'order', {
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    summary: {type: DataTypes.DECIMAL}
 })
 
 const Category = sequelize.define( 'category', {
@@ -23,9 +24,9 @@ const Category = sequelize.define( 'category', {
     name: {type: DataTypes.STRING}
 })
 
-const Comment = sequelize.define( 'comment',{
+const Discount = sequelize.define( 'discount',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    message: {type: DataTypes.STRING}
+    discount: {type: DataTypes.DECIMAL}
 })
 
 const User = sequelize.define('user',{
@@ -35,11 +36,9 @@ const User = sequelize.define('user',{
     role: {type: DataTypes.STRING, defaultValue: "USER"}
 })
 
-User.hasOne(Comment)
-Comment.belongsTo(User)
 
-Publication.hasOne(Comment)
-Comment.belongsTo(Publication)
+Discount.hasOne(Publication, { foreignKey: { allowNull: true }, onDelete: 'CASCADE' })
+Publication.belongsTo(Discount, { foreignKey: { allowNull: true }, onDelete: 'CASCADE' })
 
 Category.hasOne(Publication)
 Publication.belongsTo(Category)
@@ -47,11 +46,14 @@ Publication.belongsTo(Category)
 User.hasOne(Basket)
 Basket.belongsTo(User)
 
-Basket.hasMany(BasketDevice)
-BasketDevice.belongsTo(Basket)
+User.hasMany(Order)
+Order.belongsTo(User)
 
-Publication.hasMany(BasketDevice)
-BasketDevice.belongsTo(Publication)
+Order.hasOne(Basket)
+Basket.belongsTo(Order)
+
+Publication.hasMany(Basket)
+Basket.belongsTo(Publication)
 
 
 
@@ -59,7 +61,7 @@ module.exports = {
     Publication,
     Category,
     User,
-    Comment,
+    Discount,
     Basket,
-    BasketDevice
+    Order
 }

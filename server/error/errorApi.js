@@ -16,6 +16,9 @@ class ErrorApi extends  Error{
     static forbidden(message){
         return new ErrorApi(403, message)
     }
+    static UnauthorizeError() {
+        return new ErrorApi(401, 'Пользователь не авторизован')
+    }
 }
 
 module.exports = ErrorApi;

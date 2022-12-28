@@ -3,6 +3,7 @@ const {Category} = require('../models/models')
 class CategoryController {
     async create(req, res) {
         const {name} = req.body;
+        console.log(req.body)
         await Category.create({name,}).then(task =>{
             res.json(task);
         })
@@ -22,14 +23,16 @@ class CategoryController {
     }
     async deleteOne(req, res){
         try{
-            let param = req.params.id;
-            console.log(param);
-            await Category.destroy({where: {id: param}}).then(
+            const {name} = req.body;
+            const {id} = await Category.findOne({where: {name: name}}).catch(
+                console.log('Такой категории не существует!')
+                )
+            await Category.destroy({where: {id: id}}).then(
                 res.json('Deleted!')
             )
         }
         catch (e) {
-            res.json('Fail')
+            res.json(e)
         }
     }
 }
